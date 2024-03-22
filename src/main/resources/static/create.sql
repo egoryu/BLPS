@@ -30,8 +30,8 @@ CREATE TABLE Rubric_Record (
 CREATE TABLE Poll (
     id SERIAL PRIMARY KEY,
     record_id INT NOT NULL UNIQUE REFERENCES Record(id),
-    question varchar(256) NOT NULL,
-    type int DEFAULT 0
+    question varchar(256) NOT NULL ,
+    type int DEFAULT 0 CHECK ( type > 0 ) CHECK ( type < 20 )
 );
 
 CREATE TABLE Answers (
