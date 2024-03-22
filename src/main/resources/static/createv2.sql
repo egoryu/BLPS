@@ -28,8 +28,8 @@ CREATE TABLE Relation(
 
 CREATE TABLE Message(
     id SERIAL PRIMARY KEY,
-    "from" int NOT NULL REFERENCES Users(id),
-    "to" int NOT NULL REFERENCES Users(id),
+    user_from int NOT NULL REFERENCES Users(id),
+    user_to int NOT NULL REFERENCES Users(id),
     date timestamp NOT NULL,
     message_text text NOT NULL,
     type int NOT NULL DEFAULT 0

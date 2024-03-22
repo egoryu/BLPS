@@ -68,7 +68,7 @@ public class HumanController {
                 Optional<HumanEntity> child = humanRepository.findById(cur);
 
                 if (child.isEmpty()) {
-                    throw new Exception("Child with id " + humanDto.getExistPerson() + " not found");
+                    throw new Exception("Child with id " + cur + " not found");
                 }
 
                 relationRepository.save(new RelationEntity(Helper.getRelation(humanEntity, child.get(), 1), humanEntity, child.get()));
@@ -87,11 +87,6 @@ public class HumanController {
 
         return ResponseEntity.ok("success");
     }
-
-    /*@PostMapping("/edit")
-    public ResponseEntity<?> updateInformation(@RequestBody UserDto userDto) {
-
-    }*/
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getHuman(@PathVariable int id) {

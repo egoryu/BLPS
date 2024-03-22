@@ -5,15 +5,14 @@ import com.example.lab1stranamam.dto.request.WalletDto;
 import com.example.lab1stranamam.dto.response.HumanResponseDto;
 import com.example.lab1stranamam.dto.response.UserResponseDto;
 import com.example.lab1stranamam.entity.*;
+import com.example.lab1stranamam.enums.OrderState;
+import com.example.lab1stranamam.enums.Role;
 import com.example.lab1stranamam.repositories.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/trade")
@@ -38,7 +37,7 @@ public class TradeController {
     @GetMapping("/find")
     public ResponseEntity<?> findAllTrader() {
         try {
-            List<UsersEntity> trader = usersRepository.findAllByRole("trader");
+            List<UsersEntity> trader = usersRepository.findAllByRole(Role.TRADER.getRole());
             List<UserResponseDto> response = trader.stream().map(val -> new UserResponseDto(val.getId(), val.getUsername(), val.getEmail(), val.getRole())).toList();
 
             return ResponseEntity.ok(response);
@@ -61,7 +60,7 @@ public class TradeController {
 
             List<ContractEntity> contractor = (List<ContractEntity>) trader.get().getContractsById();
             List<UsersEntity> users = contractor.stream().map(ContractEntity::getUsersByContractor).toList();
-            List<HumanEntity> humans = users.stream().map(humanRepository::findByUserId).toList();
+            List<HumanEntity> humans = users.stream().map(humanRepository::findByUserId).filter(Objects::nonNull).toList();
             List<HumanResponseDto> response = humans.stream().map(HumanResponseDto::new).toList();
 
             return ResponseEntity.ok(response);
@@ -99,7 +98,7 @@ public class TradeController {
             }
 
             OrderEntity order = new OrderEntity(orderDto.getPaymentType(), orderDto.getSum(),
-                    orderDto.getData(), 0, user.get(), trader.get(), contactor.get());
+                    orderDto.getData(), OrderState.OPEN.ordinal(), user.get(), trader.get(), contactor.get());
 
             orderRepository.save(order);
 
@@ -146,8 +145,12 @@ public class TradeController {
             OrderEntity orderEntity = order.get();
             orderItemRepository.deleteAllByOrderId(orderEntity);
 
-            walletDto.getItems().forEach(val -> orderItemRepository.save(new OrderItemEntity(orderEntity, itemRepository.findById(val.getId()).get())));
-            orderEntity.setStatus(3);
+            walletDto.getItems().forEach(val -> {
+                Optional<ItemEntity> item = itemRepository.findById(val.getId());
+
+                item.ifPresent(itemEntity -> orderItemRepository.save(new OrderItemEntity(orderEntity, itemEntity)));
+            });
+            orderEntity.setStatus(OrderState.ADDED.ordinal());
 
             orderRepository.save(orderEntity);
 

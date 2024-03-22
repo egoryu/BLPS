@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,17 +35,18 @@ public class ContractController {
     @PostMapping("/send_invite")
     public ResponseEntity<?> sendInvite(@RequestBody MessageDto messageDto) {
         try {
-            if (!usersRepository.existsByUsername(messageDto.getUsernameFrom())) {
+            Optional<UsersEntity> usersEntityFrom = usersRepository.findByUsername(messageDto.getUsernameFrom());
+            Optional<UsersEntity> usersEntityTo = usersRepository.findByUsername(messageDto.getUsernameTo());
+            if (usersEntityFrom.isEmpty()) {
                 throw new Exception("User with username " + messageDto.getUsernameFrom() + " not found");
             }
 
-            if (!usersRepository.existsByUsername(messageDto.getUsernameTo())) {
+            if (usersEntityTo.isEmpty()) {
                 throw new Exception("User with username " + messageDto.getUsernameTo() + " not found");
             }
 
             MessageEntity message = new MessageEntity(messageDto.getDate(), messageDto.getMessageText(),
-                    messageDto.getType(), usersRepository.findByUsername(messageDto.getUsernameFrom()).get(),
-                    usersRepository.findByUsername(messageDto.getUsernameTo()).get());
+                    messageDto.getType(), usersEntityFrom.get(), usersEntityTo.get());
             messageRepository.save(message);
         } catch (Exception e) {
             Map<Object, Object> response = new HashMap<>();
@@ -83,17 +85,18 @@ public class ContractController {
     @PostMapping("/accept_contract")
     public ResponseEntity<?> acceptContract(@RequestBody MessageDto messageDto) {
         try {
-            if (!usersRepository.existsByUsername(messageDto.getUsernameFrom())) {
+            Optional<UsersEntity> usersEntityFrom = usersRepository.findByUsername(messageDto.getUsernameFrom());
+            Optional<UsersEntity> usersEntityTo = usersRepository.findByUsername(messageDto.getUsernameTo());
+            if (usersEntityFrom.isEmpty()) {
                 throw new Exception("User with username " + messageDto.getUsernameFrom() + " not found");
             }
 
-            if (!usersRepository.existsByUsername(messageDto.getUsernameTo())) {
+            if (usersEntityTo.isEmpty()) {
                 throw new Exception("User with username " + messageDto.getUsernameTo() + " not found");
             }
 
             ContractEntity contract = new ContractEntity(messageDto.getDate(),
-                    messageDto.getType(), usersRepository.findByUsername(messageDto.getUsernameFrom()).get(),
-                    usersRepository.findByUsername(messageDto.getUsernameTo()).get());
+                    messageDto.getType(), usersEntityFrom.get(), usersEntityTo.get());
             contractRepository.save(contract);
         } catch (Exception e) {
             Map<Object, Object> response = new HashMap<>();

@@ -4,6 +4,8 @@ import com.example.lab1stranamam.dto.request.UserDto;
 import com.example.lab1stranamam.dto.request.WalletDto;
 import com.example.lab1stranamam.dto.response.HumanResponseDto;
 import com.example.lab1stranamam.entity.*;
+import com.example.lab1stranamam.enums.OrderState;
+import com.example.lab1stranamam.enums.Payment;
 import com.example.lab1stranamam.repositories.ItemRepository;
 import com.example.lab1stranamam.repositories.OrderRepository;
 import com.example.lab1stranamam.repositories.UsersRepository;
@@ -84,7 +86,7 @@ public class WalletController {
                 throw new Exception("Other person order");
             }
 
-            if (order.getStatus() != 5) {
+            if (order.getStatus() != OrderState.READY.ordinal()) {
                 throw new Exception("Order not ready for pay");
             }
 
@@ -102,7 +104,7 @@ public class WalletController {
             WalletEntity consumerWallet = consumerWalletOptional.get();
             WalletEntity traderWallet = traderWalletOptional.get();
 
-            if (order.getPaymentType() == 0) {
+            if (order.getPaymentType() == Payment.MONEY.ordinal()) {
                 consumerWallet.setAmount(consumerWallet.getAmount() - order.getSum());
                 traderWallet.setAmount(traderWallet.getAmount() + order.getSum());
 
@@ -110,13 +112,14 @@ public class WalletController {
                 walletRepository.save(traderWallet);
             } else {
                 order.getOrderItemsById().forEach(val -> {
-                    ItemEntity item = itemRepository.findById(val.getId()).get();
+                    ItemEntity item = val.getItemByItem();
+
                     item.setWalletByWalletId(traderWallet);
                     itemRepository.save(item);
                 });
             }
 
-            order.setStatus(6);
+            order.setStatus(OrderState.CLOSE.ordinal());
             orderRepository.save(order);
 
             return ResponseEntity.ok("success");

@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderItemRepository extends CrudRepository<OrderItemEntity, Integer> {
-    Boolean deleteAllByOrderId(OrderEntity order);
+    void deleteAllByOrderId(OrderEntity order);
 }
