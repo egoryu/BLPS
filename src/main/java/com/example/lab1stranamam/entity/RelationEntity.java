@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "relation", schema = "public", catalog = "stranamam")
+@Table(name = "relation")
 @Data
 @NoArgsConstructor
 public class RelationEntity {

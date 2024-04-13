@@ -8,6 +8,8 @@ import com.example.lab1stranamam.entity.*;
 import com.example.lab1stranamam.enums.OrderState;
 import com.example.lab1stranamam.enums.Role;
 import com.example.lab1stranamam.repositories.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,11 +36,13 @@ public class TradeController {
         this.itemRepository = itemRepository;
     }
 
-    @GetMapping("/find")
-    public ResponseEntity<?> findAllTrader() {
+    @GetMapping("/traders")
+    public ResponseEntity<?> findAllTrader(Pageable pageable) {
         try {
-            List<UsersEntity> trader = usersRepository.findAllByRole(Role.TRADER.getRole());
-            List<UserResponseDto> response = trader.stream().map(val -> new UserResponseDto(val.getId(), val.getUsername(), val.getEmail(), val.getRole())).toList();
+            Page<UsersEntity> traderPage = usersRepository.findAllByRole(Role.TRADER.getRole(), pageable);
+            List<UserResponseDto> response = traderPage.getContent().stream()
+                    .map(val -> new UserResponseDto(val.getId(), val.getUsername(), val.getEmail(), val.getRole()))
+                    .toList();
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -49,8 +53,8 @@ public class TradeController {
         }
     }
 
-    @GetMapping("/find/{id}")
-    public ResponseEntity<?> findTraderContractor(@PathVariable int id) {
+    @GetMapping("/traders/{id}")
+    public ResponseEntity<?> findTraderContractor(@PathVariable int id, Pageable pageable) {
         try {
             Optional<UsersEntity> trader = usersRepository.findById(id);
 
@@ -59,7 +63,12 @@ public class TradeController {
             }
 
             List<ContractEntity> contractor = (List<ContractEntity>) trader.get().getContractsById();
-            List<UsersEntity> users = contractor.stream().map(ContractEntity::getUsersByContractor).toList();
+            List<UsersEntity> users = contractor.stream()
+                    .map(ContractEntity::getUsersByContractor)
+                    .sorted()
+                    .skip(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .toList();
             List<HumanEntity> humans = users.stream().map(humanRepository::findByUserId).filter(Objects::nonNull).toList();
             List<HumanResponseDto> response = humans.stream().map(HumanResponseDto::new).toList();
 

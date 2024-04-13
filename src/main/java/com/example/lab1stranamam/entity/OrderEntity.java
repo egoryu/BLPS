@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity
-@Table(name = "order", schema = "public", catalog = "stranamam")
+@Table(name = "order")
 @Data
 @NoArgsConstructor
 public class OrderEntity {

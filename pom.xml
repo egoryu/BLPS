@@ -11,7 +11,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>Lab1-StranaMam</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>Lab1-StranaMam</name>
 	<description>Lab1-StranaMam</description>
 	<properties>

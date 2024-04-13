@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.Collection;
 
 @Entity
-@Table(name = "item", schema = "public", catalog = "stranamam")
+@Table(name = "item")
 @Data
 @NoArgsConstructor
 public class ItemEntity {
