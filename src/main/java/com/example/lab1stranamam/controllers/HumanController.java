@@ -12,6 +12,7 @@ import com.example.lab1stranamam.service.HumanService;
 import com.example.lab1stranamam.ulits.Helper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -98,6 +99,26 @@ public class HumanController {
             }
 
             return ResponseEntity.ok(new HumanResponseDto(human.get()));
+        } catch (Exception e) {
+            Map<Object, Object> response = new HashMap<>();
+            response.put("error", e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteHuman(@PathVariable int id) {
+        try {
+            Optional<HumanEntity> human = humanRepository.findById(id);
+
+            if (human.isEmpty()) {
+                throw new Exception("Human with id " + id + " not found");
+            }
+
+            humanRepository.delete(human.get());
+            return ResponseEntity.ok("success");
         } catch (Exception e) {
             Map<Object, Object> response = new HashMap<>();
             response.put("error", e.getMessage());

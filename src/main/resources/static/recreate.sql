@@ -77,16 +77,16 @@ CREATE TABLE Order_Item(
 );
 
 INSERT INTO users (username, email, password, role) VALUES
-                                                        ('john_doe', 'john.doe@example.com', 'mypassword', 'admin'),
-                                                        ('sarah_smith', 'sarah.smith@example.com', 'p@ssw0rd', 'woman'),
-                                                        ('alex_brown', 'alex.brown@example.com', 'securepass', 'man'),
-                                                        ('lucy_wilson', 'lucy.wilson@example.com', 'letmein123', 'woman'),
-                                                        ('mike_jones', 'mike.jones@example.com', 'mikespass', 'man'),
-                                                        ('emily_clark', 'emily.clark@example.com', 'password123', 'trader'),
-                                                        ('david_miller', 'david.miller@example.com', 'davidpass', 'man'),
-                                                        ('olivia_taylor', 'olivia.taylor@example.com', 'olivia123', 'trader'),
-                                                        ('ryan_carter', 'ryan.carter@example.com', 'ryancpass', 'man'),
-                                                        ('jessica_hall', 'jessica.hall@example.com', 'jessic@pass', 'woman');
+                                                        ('john_doe', 'john.doe@example.com', 'mypassword', 'ADMIN'),
+                                                        ('sarah_smith', 'sarah.smith@example.com', 'p@ssw0rd', 'WOMAN'),
+                                                        ('alex_brown', 'alex.brown@example.com', 'securepass', 'MAN'),
+                                                        ('lucy_wilson', 'lucy.wilson@example.com', 'letmein123', 'WOMAN'),
+                                                        ('mike_jones', 'mike.jones@example.com', 'mikespass', 'MAN'),
+                                                        ('emily_clark', 'emily.clark@example.com', 'password123', 'TRADER'),
+                                                        ('david_miller', 'david.miller@example.com', 'davidpass', 'MAN'),
+                                                        ('olivia_taylor', 'olivia.taylor@example.com', 'olivia123', 'TRADER'),
+                                                        ('ryan_carter', 'ryan.carter@example.com', 'ryancpass', 'MAN'),
+                                                        ('jessica_hall', 'jessica.hall@example.com', 'jessic@pass', 'WOMAN');
 
 INSERT INTO Human (user_id, name, surname, age, sex, status, address, phone, description)
 VALUES

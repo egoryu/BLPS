@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -39,7 +40,7 @@ public class TradeController {
     @GetMapping("/traders")
     public ResponseEntity<?> findAllTrader(Pageable pageable) {
         try {
-            Page<UsersEntity> traderPage = usersRepository.findAllByRole(Role.TRADER.getRole(), pageable);
+            Page<UsersEntity> traderPage = usersRepository.findAllByRole(Role.TRADER.name(), pageable);
             List<UserResponseDto> response = traderPage.getContent().stream()
                     .map(val -> new UserResponseDto(val.getId(), val.getUsername(), val.getEmail(), val.getRole()))
                     .toList();
@@ -121,6 +122,7 @@ public class TradeController {
     }
 
     @PutMapping("/order/{id}/{status}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'WOMAN', 'TRADER')")
     public ResponseEntity<?> updateOrderStatus(@PathVariable int id, @PathVariable int status) {
         try {
             Optional<OrderEntity> order = orderRepository.findById(id);
@@ -143,7 +145,7 @@ public class TradeController {
     }
 
     @PutMapping("/order/{id}")
-    public ResponseEntity<?> updateOrderStatus(@RequestBody WalletDto walletDto, @PathVariable int id) {
+    public ResponseEntity<?> updateOrderItem(@RequestBody WalletDto walletDto, @PathVariable int id) {
         try {
             Optional<OrderEntity> order = orderRepository.findById(id);
 

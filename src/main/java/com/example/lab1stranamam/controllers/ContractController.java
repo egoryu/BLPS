@@ -11,6 +11,7 @@ import com.example.lab1stranamam.repositories.MessageRepository;
 import com.example.lab1stranamam.repositories.UsersRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -33,6 +34,7 @@ public class ContractController {
     }
 
     @PostMapping("/send_invite")
+    @PreAuthorize("hasRole('TRADER')")
     public ResponseEntity<?> sendInvite(@RequestBody MessageDto messageDto) {
         try {
             Optional<UsersEntity> usersEntityFrom = usersRepository.findByUsername(messageDto.getUsernameFrom());
@@ -59,6 +61,7 @@ public class ContractController {
     }
 
     @PutMapping("/send_invite")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MAN', 'TRADER')")
     public ResponseEntity<?> updateInvite(@RequestBody MessageDto messageDto) {
         try {
             Optional<MessageEntity> messageEntityOptional = messageRepository.findById(messageDto.getMessageId());
@@ -83,6 +86,7 @@ public class ContractController {
     }
 
     @PostMapping("/accept_contract")
+    @PreAuthorize("hasRole('MAN')")
     public ResponseEntity<?> acceptContract(@RequestBody MessageDto messageDto) {
         try {
             Optional<UsersEntity> usersEntityFrom = usersRepository.findByUsername(messageDto.getUsernameFrom());
