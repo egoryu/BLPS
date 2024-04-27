@@ -56,7 +56,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/trade/**").hasRole(Role.WOMAN.name())
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .httpBasic(Customizer.withDefaults());

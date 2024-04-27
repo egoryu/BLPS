@@ -9,6 +9,8 @@ import com.example.lab1stranamam.entity.WalletEntity;
 import com.example.lab1stranamam.repositories.ContractRepository;
 import com.example.lab1stranamam.repositories.MessageRepository;
 import com.example.lab1stranamam.repositories.UsersRepository;
+import com.example.lab1stranamam.service.ContractService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,34 +24,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/contract")
+@AllArgsConstructor
 public class ContractController {
-    private final UsersRepository usersRepository;
-    private final MessageRepository messageRepository;
-    private final ContractRepository contractRepository;
-
-    public ContractController(UsersRepository usersRepository, MessageRepository messageRepository, ContractRepository contractRepository) {
-        this.usersRepository = usersRepository;
-        this.messageRepository = messageRepository;
-        this.contractRepository = contractRepository;
-    }
-
+    private final ContractService contractService;
     @PostMapping("/send_invite")
     @PreAuthorize("hasRole('TRADER')")
     public ResponseEntity<?> sendInvite(@RequestBody MessageDto messageDto) {
         try {
-            Optional<UsersEntity> usersEntityFrom = usersRepository.findByUsername(messageDto.getUsernameFrom());
-            Optional<UsersEntity> usersEntityTo = usersRepository.findByUsername(messageDto.getUsernameTo());
-            if (usersEntityFrom.isEmpty()) {
-                throw new Exception("User with username " + messageDto.getUsernameFrom() + " not found");
-            }
-
-            if (usersEntityTo.isEmpty()) {
-                throw new Exception("User with username " + messageDto.getUsernameTo() + " not found");
-            }
-
-            MessageEntity message = new MessageEntity(messageDto.getDate(), messageDto.getMessageText(),
-                    messageDto.getType(), usersEntityFrom.get(), usersEntityTo.get());
-            messageRepository.save(message);
+            contractService.sentMessage(messageDto);
         } catch (Exception e) {
             Map<Object, Object> response = new HashMap<>();
             response.put("error", e.getMessage());
@@ -64,17 +46,7 @@ public class ContractController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MAN', 'TRADER')")
     public ResponseEntity<?> updateInvite(@RequestBody MessageDto messageDto) {
         try {
-            Optional<MessageEntity> messageEntityOptional = messageRepository.findById(messageDto.getMessageId());
-
-            if (messageEntityOptional.isEmpty()) {
-                throw new Exception("Message with id " + messageDto.getMessageId() + " not found");
-            }
-
-            MessageEntity message = messageEntityOptional.get();
-            message.setMessageText(messageDto.getMessageText());
-            message.setType(messageDto.getType());
-
-            messageRepository.save(message);
+            contractService.editMessage(messageDto);
         } catch (Exception e) {
             Map<Object, Object> response = new HashMap<>();
             response.put("error", e.getMessage());
@@ -89,19 +61,7 @@ public class ContractController {
     @PreAuthorize("hasRole('MAN')")
     public ResponseEntity<?> acceptContract(@RequestBody MessageDto messageDto) {
         try {
-            Optional<UsersEntity> usersEntityFrom = usersRepository.findByUsername(messageDto.getUsernameFrom());
-            Optional<UsersEntity> usersEntityTo = usersRepository.findByUsername(messageDto.getUsernameTo());
-            if (usersEntityFrom.isEmpty()) {
-                throw new Exception("User with username " + messageDto.getUsernameFrom() + " not found");
-            }
-
-            if (usersEntityTo.isEmpty()) {
-                throw new Exception("User with username " + messageDto.getUsernameTo() + " not found");
-            }
-
-            ContractEntity contract = new ContractEntity(messageDto.getDate(),
-                    messageDto.getType(), usersEntityFrom.get(), usersEntityTo.get());
-            contractRepository.save(contract);
+            contractService.acceptContract(messageDto);
         } catch (Exception e) {
             Map<Object, Object> response = new HashMap<>();
             response.put("error", e.getMessage());
@@ -111,23 +71,4 @@ public class ContractController {
 
         return ResponseEntity.ok("success");
     }
-
-    /*@GetMapping("/{userId}")
-    public ResponseEntity<?> getHuman(@PathVariable int userId) {
-        try {
-            Optional<UsersEntity> user = usersRepository.findById(userId);
-
-            if (user.isEmpty()) {
-                throw new Exception("User with id " + userId + " not found");
-            }
-            List<ContractEntity> contracts = contractRepository.findAllByUsersByMaster(user.get());
-
-            return ResponseEntity.ok(new WalletDto(wallet.get()));
-        } catch (Exception e) {
-            Map<Object, Object> response = new HashMap<>();
-            response.put("error", e.getMessage());
-
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
-    }*/
 }
