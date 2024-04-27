@@ -25,7 +25,7 @@ import java.util.Optional;
 public class HumanController {
     private final HumanService humanService;
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public ResponseEntity<?> addInformation(@RequestBody HumanDto humanDto) {
         try {
             humanService.addHumanInformation(humanDto);
