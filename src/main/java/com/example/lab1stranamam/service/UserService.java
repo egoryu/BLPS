@@ -1,6 +1,7 @@
-package com.example.lab1stranamam.security;
+package com.example.lab1stranamam.service;
 
 import com.example.lab1stranamam.repositories.UsersRepository;
+import com.example.lab1stranamam.security.User;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

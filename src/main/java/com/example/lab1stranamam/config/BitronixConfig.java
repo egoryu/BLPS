@@ -6,8 +6,11 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.transaction.UserTransaction;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.*;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.jta.JtaTransactionManager;
@@ -18,6 +21,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
+//@EnableJpaRepositories(basePackages = "com.example.lab1stranamam.repositories", entityManagerFactoryRef = "primaryPgDataSourceResource")
 public class BitronixConfig {
     @Value("${bitronix.tm.serverId}")
     private String serverId;
@@ -52,4 +56,57 @@ public class BitronixConfig {
         return configuration;
     }
 
+    /*@Bean(name = "primaryPgDataSource")
+    @Primary
+    public DataSource primaryPgDataSource() {
+        PoolingDataSource bitronixDataSourceBean = new PoolingDataSource();
+        bitronixDataSourceBean.setMaxPoolSize(5);
+        bitronixDataSourceBean.setUniqueName("primaryPgDataSourceResource");
+        bitronixDataSourceBean.setClassName("org.postgresql.xa.PGXADataSource");
+        bitronixDataSourceBean.setAllowLocalTransactions(true);
+        Properties properties = new Properties();
+        properties.put("user",  "postgres");
+        properties.put("password",  "1112");
+        properties.put("url", "jdbc:postgresql://localhost:5432/stranamam");
+        bitronixDataSourceBean.setDriverProperties(properties);
+        return bitronixDataSourceBean;
+    }
+
+    @Bean(name = "secondPgDataSource")
+    public DataSource secondPgDataSource() {
+        PoolingDataSource bitronixDataSourceBean = new PoolingDataSource();
+        bitronixDataSourceBean.setMaxPoolSize(5);
+        bitronixDataSourceBean.setUniqueName("secondPgDataSourceResource");
+        bitronixDataSourceBean.setClassName("org.postgresql.xa.PGXADataSource");
+        bitronixDataSourceBean.setAllowLocalTransactions(true);
+        Properties properties = new Properties();
+        properties.put("user",  "postgres");
+        properties.put("password",  "1112");
+        properties.put("url", "jdbc:postgresql://localhost:5432/mobile");
+        bitronixDataSourceBean.setDriverProperties(properties);
+        return bitronixDataSourceBean;
+    }
+
+    @Bean(name = "entityManagerFactory")
+    @Primary
+    @DependsOn({"primaryPgDataSource"})
+    public LocalContainerEntityManagerFactoryBean
+    primaryPgDataEntityManagerFactory(EntityManagerFactoryBuilder builder, DataSource primaryPgDataSource) {
+        return builder
+                .dataSource(primaryPgDataSource)
+                .persistenceUnit("primaryPgDataSourceResource")
+                .packages(BitronixConfig.class)
+                .build();
+    }
+
+    /*@Bean(name = "entityManagerFactory")
+    @DependsOn({"secondPgDataSource"})
+    public LocalContainerEntityManagerFactoryBean
+    secondPgDataEntityManagerFactory(EntityManagerFactoryBuilder builder, DataSource secondPgDataSource) {
+        return builder
+                .dataSource(secondPgDataSource)
+                .persistenceUnit("secondPgDataSourceResource")
+                .packages(BitronixConfig.class)
+                .build();
+    }*/
 }
