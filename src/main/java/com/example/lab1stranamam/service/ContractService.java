@@ -8,6 +8,12 @@ import com.example.lab1stranamam.repositories.ContractRepository;
 import com.example.lab1stranamam.repositories.MessageRepository;
 import com.example.lab1stranamam.repositories.UsersRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +22,14 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@EnableRabbit
 public class ContractService {
+
+
     private final UsersRepository usersRepository;
     private final MessageRepository messageRepository;
     private final ContractRepository contractRepository;
+    private RabbitTemplate template;
 
     @Transactional(rollbackFor = {Exception.class})
     public void sentMessage(MessageDto messageDto) throws Exception {
@@ -34,10 +44,18 @@ public class ContractService {
             throw new Exception("User with username " + messageDto.getUsernameTo() + " not found");
         }
 
-        MessageEntity message = new MessageEntity(messageDto.getDate(), messageDto.getMessageText(),
+        template.convertAndSend("testExchange", "kekKey", "keker");
+        System.out.println("kek");
+        /*MessageEntity message = new MessageEntity(messageDto.getDate(), messageDto.getMessageText(),
                 messageDto.getType(), usersEntityFrom.get(), usersEntityTo.get());
-        messageRepository.save(message);
+        messageRepository.save(message);*/
     }
+
+    @RabbitListener(queues = "kekQueue")
+    public void processMyQueue(String message) {
+        System.out.println("Received from myQueue : " + message);
+    }
+
 
     @Transactional(rollbackFor = {Exception.class}, isolation = Isolation.SERIALIZABLE)
     public void editMessage(MessageDto messageDto) throws Exception {

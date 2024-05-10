@@ -1,0 +1,10 @@
+version: '3'
+services:
+  localRabbitMQ:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: 1112
+    ports:
+      - 5672:5672
+      - 15672:15672

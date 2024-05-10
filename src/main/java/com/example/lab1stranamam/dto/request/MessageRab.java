@@ -3,12 +3,11 @@ package com.example.lab1stranamam.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class MessageDto {
+public class MessageRab {
     private int messageId;
     private LocalDateTime date;
     private String messageText;
