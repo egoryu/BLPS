@@ -49,7 +49,7 @@ public class TransactionConfig {
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager() throws SystemException {
+    public JtaTransactionManager  transactionManager() throws SystemException {
         JtaTransactionManager jtaTransactionManager = new JtaTransactionManager();
         jtaTransactionManager.setTransactionManager(userTransactionManager());
         jtaTransactionManager.setUserTransaction(userTransactionImp());

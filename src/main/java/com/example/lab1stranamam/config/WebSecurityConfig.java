@@ -55,9 +55,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         HashSet<String> csrfAllowedMethods = new HashSet<>(Set.of("GET", "HEAD", "TRACE", "OPTIONS"));
 
         http.csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/auth/**")
                 .requireCsrfProtectionMatcher(request ->
                         !csrfAllowedMethods.contains(request.getMethod()))
-                .ignoringRequestMatchers("/api/auth/**")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
             .authorizeHttpRequests(request -> request

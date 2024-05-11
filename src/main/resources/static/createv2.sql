@@ -73,3 +73,14 @@ CREATE TABLE Order_Item(
     "order_id" int NOT NULL REFERENCES "order"(id),
     item_id int NOT NULL REFERENCES Item(id)
 );
+
+CREATE TABLE History(
+    id SERIAL PRIMARY KEY,
+    message_id int NOT NULL,
+    user_from varchar(32) NOT NULL,
+    user_to varchar(32) NOT NULL,
+    date timestamp NOT NULL,
+    message_text text NOT NULL,
+    type int NOT NULL DEFAULT 0,
+    log_date timestamp NOT NULL
+);
